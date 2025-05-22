@@ -6,7 +6,7 @@
             "data_type": "date",
             "granularity": "day"
         },
-        cluster_by = ["loyalty_level"],
+        cluster_by = ["loyalty_level"]
     ) 
 }}
 

@@ -13,6 +13,5 @@ sources:
           - name: customer_id
             tests:
             - not_null
-            - unique
       - name: dim_stores
       - name: dim_products

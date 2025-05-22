@@ -1,0 +1,7 @@
+version: 2
+
+sources:
+  - name: sources_tables
+    tables:
+      - name: fact_sales
+      - name: dim_customers

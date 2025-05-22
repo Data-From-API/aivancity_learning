@@ -10,7 +10,7 @@
     ) 
 }}
 
-select
+select distinct
     customer_id,
     first_name,
     last_name,

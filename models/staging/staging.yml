@@ -15,10 +15,11 @@ models:
       description: 'Id of the product. Unique Identifier of the product'
       tests:
         - not_null
-  
+        - unique
   - name: stg_store
     columns:
     - name: store_id
       description: 'Id of the store. Unique Identifier of the store'
       tests:
         - not_null
+        - unique

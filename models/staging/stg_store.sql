@@ -4,7 +4,7 @@
     ) 
 }}
 
-select
+select distinct
     store_id,
     store_name,
     channel as store_channel

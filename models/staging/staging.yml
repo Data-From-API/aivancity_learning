@@ -16,6 +16,7 @@ models:
       tests:
         - not_null
         - unique
+
   - name: stg_store
     columns:
     - name: store_id
@@ -23,3 +24,12 @@ models:
       tests:
         - not_null
         - unique
+        
+  - name: stg_sales
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+      - name: sale_date
+        tests:
+          - not_null

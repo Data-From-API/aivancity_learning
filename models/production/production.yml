@@ -1,0 +1,147 @@
+version: 2
+
+models:
+  - name: prod_sales_kpi
+    description: >
+      Aggregated daily sales KPIs at the intersection of product, customer, and store dimensions.  
+      Partitioned by sale_date (day) and clustered by customer_loyalty_level and product_category.
+    columns:
+      - name: sale_date
+        description: "Date of the sale (partition column)."
+        tests:
+          - not_null
+      - name: product_category
+        description: "High-level product category."
+        tests:
+          - not_null
+      - name: product_subcategory
+        description: "More granular product subcategory."
+      - name: customer_loyalty_level
+        description: "Loyalty tier of the purchasing customer (e.g., Silver, Gold, Platinum, or 'No Loyalty')."
+      - name: customer_gender
+        description: "Gender code of the purchasing customer ('M', 'F', or 'Not Defined')."
+      - name: store_city
+        description: "City where the store is located."
+      - name: store_region
+        description: "Geographic region (state/territory) of the store."
+      - name: store_channel
+        description: "Normalized store channel (e.g., 'Store', 'eStore', or 'Not Defined')."
+        tests:
+          - not_null
+      - name: total_product_sold
+        description: "Total number of product units sold (count of product_id)."
+        tests:
+          - not_null
+      - name: nb_distinct_product_sold
+        description: "Number of distinct products sold on that day."
+        tests:
+          - not_null
+      - name: revenue_ordered
+        description: "Sum of raw order amounts for all transactions on that day."
+        tests:
+          - not_null
+      - name: revenue_billed
+        description: "Sum of billed revenue for all transactions on that day (only positive billed values)."
+        tests:
+          - not_null
+      - name: nb_transactions
+        description: "Count of distinct transactions (key_transaction_id) on that day."
+        tests:
+          - not_null
+      - name: nb_customer
+        description: "Count of unique customers who made purchases on that day."
+        tests:
+          - not_null
+
+  - name: final_rfm_segmentation
+    description: >
+      Final RFM segmentation table.  
+      Assigns each customer a segment_id and segment_name based on RFM scores:
+      - R_value: days since last purchase  
+      - F_value: number of transactions in last 12 months  
+      - M_value: billed revenue in last 12 months  
+      Only “active” customers (R_value ≤ 365, F_value > 0, M_value > 0) receive NTILE(5) scores; 
+      inactives default to score 1.  
+      Segment mapping:  
+      1=VIP, 2=Good Customer, 3=Regular, 4=Expectancy, 5=Opportunist, 6=Cold Sensitive, 
+      7=Minimalist, 8=New, 9=Inactive.  
+      Partitioned by snapshot_date (date).
+    columns:
+      - name: customer_id
+        description: "ID of the customer (unique key)."
+        tests:
+          - unique
+          - not_null
+      - name: R_value
+        description: "Recency in days: days since last billed sale. Large placeholder if no sale in 3 years."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: R_score
+        description: >
+          Recency score (1-5).  
+          1 if F_value=0 or R_value>365 (inactive), otherwise NTILE(5) over R_value ascending for active customers.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false
+      - name: F_value
+        description: "Frequency: count of distinct transactions (last 12 months)."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: F_score
+        description: >
+          Frequency score (1-5).  
+          1 if F_value=0 (inactive), otherwise NTILE(5) over F_value descending for active customers.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false
+      - name: M_value
+        description: "Monetary: sum of billed revenue (last 12 months)."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: M_score
+        description: >
+          Monetary score (1-5).  
+          1 if M_value=0 (inactive), otherwise NTILE(5) over M_value descending for active customers.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false
+      - name: RFM_code
+        description: "Concatenated string `R_score-F_score-M_score` (e.g., '5-3-4')."
+        tests:
+          - not_null
+      - name: snapshot_date
+        description: "Date when RFM was calculated (CURRENT_DATE() at runtime)."
+        tests:
+          - not_null
+      - name: segment_id
+        description: >
+          Numerical RFM segment ID:
+          1=VIP, 2=Good Customer, 3=Regular, 4=Expectancy, 5=Opportunist, 
+          6=Cold Sensitive, 7=Minimalist, 8=New, 9=Inactive.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+              quote: false
+      - name: segment_name
+        description: >
+          Textual RFM segment:
+          'VIP', 'Good Customer', 'Regular', 'Expectancy', 'Opportunist',
+          'Cold Sensitive', 'Minimalist', 'New', 'Inactive'.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['VIP', 'Good Customer', 'Regular', 'Expectancy', 'Opportunist', 
+                       'Cold Sensitive', 'Minimalist', 'New', 'Inactive']

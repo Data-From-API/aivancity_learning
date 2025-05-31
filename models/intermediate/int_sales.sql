@@ -5,7 +5,12 @@ select
     key_transaction_id,
     sales.store_id,
     store.store_name,
-    store_channel,
+    case 
+        when store_channel = 'boutique' then 'Store'
+        when store_channel = 'ecommerce' then 'eStore'
+        when store_channel = 'click_collect' then 'eStore'
+        else 'Not Defined' 
+    end as store_channel,
     store.city as store_city,
     store.region as store_region,
     revenue_ordered,
@@ -20,8 +25,8 @@ select
     sales.customer_id,
     customer.fullname as customer_fullname,
     case 
-        when customer.gender = 'Male' then 'M'
-        when customer.gender = 'Female' then 'F'
+        when customer.gender = 'male' then 'M'
+        when customer.gender = 'female' then 'F'
         else 'Not Defined'
     end as customer_gender,
     customer.is_loyalty_member as is_customer_loyal,

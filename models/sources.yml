@@ -2,16 +2,92 @@ version: 2
 
 sources:
   - name: sources_tables
+    description: >
+      Toutes les tables sources brutes utilisées dans le projet.
     tables:
       - name: fact_sales
+        description: >
+          Table de faits des transactions brutes. Contient une ligne par vente/produit,
+          avec montant facturé, montant commandé, statut, date, etc.
         columns:
-          - name: customer_id
+          - name: sale_date
+            description: "Date et heure de la vente (DATETIME)."
             tests:
-            - not_null
+              - not_null
+          - name: customer_id
+            description: "Identifiant du client ayant effectué la transaction."
+            tests:
+              - not_null
+          - name: product_id
+            description: "Identifiant du produit vendu."
+            tests:
+              - not_null
+          - name: store_id
+            description: "Identifiant du magasin ou canal de vente."
+            tests:
+              - not_null
+          - name: billed_amount
+            description: "Montant facturé au client (FLOAT). Valeur positive pour les ventes valides."
+            tests:
+              - not_null
+
       - name: dim_customers
+        description: >
+          Table de dimension clients. Contient les informations démographiques et de fidélité
+          pour chaque client (ID, prénom, nom, genre, adhésion fidélité, date d’inscription, etc.).
         columns:
           - name: customer_id
+            description: "Clé primaire du client, identifiant unique."
             tests:
-            - not_null
-      - name: dim_stores
+              - not_null
+              - unique
+          - name: first_name
+            description: "Prénom du client."
+            tests:
+              - not_null
+          - name: last_name
+            description: "Nom de famille du client."
+            tests:
+              - not_null
+          - name: signup_date
+            description: "Date d’inscription ou d’adhésion du client."
+            tests:
+              - not_null
+
       - name: dim_products
+        description: >
+          Table de dimension produits. Contient les métadonnées pour chaque produit
+          (ID, nom, marque, catégorie, sous-catégorie).
+        columns:
+          - name: product_id
+            description: "Clé primaire du produit, identifiant unique."
+            tests:
+              - not_null
+              - unique
+          - name: product_name
+            description: "Nom du produit."
+            tests:
+              - not_null
+          - name: category
+            description: "Catégorie principale du produit."
+            tests:
+              - not_null
+
+      - name: dim_stores
+        description: >
+          Table de dimension magasins. Contient les informations sur chaque point de vente
+          ou canal (ID, nom, type de canal, ville, région).
+        columns:
+          - name: store_id
+            description: "Clé primaire du magasin, identifiant unique."
+            tests:
+              - not_null
+              - unique
+          - name: channel
+            description: "Type de canal (ex. 'boutique', 'ecommerce', 'click_collect')."
+            tests:
+              - not_null
+          - name: city
+            description: "Ville où se trouve le magasin."
+          - name: region
+            description: "Région ou département où se trouve le magasin."

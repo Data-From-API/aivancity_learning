@@ -1,6 +1,5 @@
 {{ 
     config(
-        materialized="table",
         partition_by = {
             "field": "sale_date",
             "data_type": "date",
@@ -18,6 +17,7 @@ select
     customer_gender,
     store_city,
     store_region,
+    store_channel,
     count(product_id) as total_product_sold,
     count(distinct product_id) as nb_distinct_product_sold,
     sum(revenue_ordered) as revenue_ordered,

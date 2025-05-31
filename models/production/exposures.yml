@@ -1,0 +1,20 @@
+exposures:
+  - name: daily_run
+    type: dashboard
+    maturity: high
+    description: "Models for daily dashboard update"
+    depends_on:
+      - ref('prod_sales_kpi')
+    owner:
+      name: Eric Badarou
+      email: eric@datafromapi.com
+  - name: rfm_histo_run
+    type: analysis
+    maturity: medium
+    description: "Models for build RFM history table"
+    depends_on:
+      - ref('final_rfm_segmentation')
+    owner :
+      name: Eric Badarou
+      email: eric@datafromapi.com
+      

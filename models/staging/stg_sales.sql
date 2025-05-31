@@ -1,12 +1,13 @@
 {{ 
     config(
-        materialized="table",
+        materialized="incremental",
         partition_by = {
             "field": "sale_date",
             "data_type": "date",
             "granularity": "day"
         },
         cluster_by = ["customer_id", "status", "store_id"]
+        
     ) 
 }}
 
@@ -20,4 +21,11 @@ select
     cast(billed_amount as float64) as revenue_billed,
     status
 from {{ source('sources_tables','fact_sales') }}
-where sale_date is not null
+
+{% if is_incremental() %}
+
+  where date(sale_date) >= (select max(date(sale_date)) from {{ this }})
+
+{% endif %}
+
+and sale_date is not null

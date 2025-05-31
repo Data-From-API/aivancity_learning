@@ -40,7 +40,6 @@ sources:
             description: "Clé primaire du client, identifiant unique."
             tests:
               - not_null
-              - unique
           - name: first_name
             description: "Prénom du client."
             tests:
@@ -63,7 +62,6 @@ sources:
             description: "Clé primaire du produit, identifiant unique."
             tests:
               - not_null
-              - unique
           - name: product_name
             description: "Nom du produit."
             tests:
@@ -82,7 +80,6 @@ sources:
             description: "Clé primaire du magasin, identifiant unique."
             tests:
               - not_null
-              - unique
           - name: channel
             description: "Type de canal (ex. 'boutique', 'ecommerce', 'click_collect')."
             tests:

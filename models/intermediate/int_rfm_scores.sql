@@ -14,9 +14,9 @@ with base as (
 actifs as (
   select
     customer_id,
-    R_value,
-    F_value,
-    M_value
+    cast(R_value as int64) as R_value,
+    cast(F_value as int64) as F_value,
+    cast(M_value as int64) as M_value
   from base
   where R_value <= 365
     and F_value > 0
@@ -36,20 +36,20 @@ scores_actifs as (
 -- 3) On revient ensuite sur la table “base” et on fusionne :
 select
   b.customer_id,
-  b.R_value,
+  safe_cast(b.R_value as int64) as R_value,
 
   -- Si le client est dans “scores_actifs”, on prend le R_score_act, sinon on met 1
-  coalesce(sa.R_score_act, 1) as R_score,
+  safe_cast(coalesce(sa.R_score_act, 1) as int64) as R_score,
 
   b.F_value,
 
   -- Même logique pour F_score : si le client n’est pas actif, on force 1
-  coalesce(sa.F_score_act, 1) as F_score,
+  safe_cast(coalesce(sa.F_score_act, 1) as int64) as F_score,
 
-  b.M_value,
+  safe_cast(b.M_value as int64) as M_value,
 
   -- Pour M_score : idem
-  coalesce(sa.M_score_act, 1) as M_score,
+  safe_cast(coalesce(sa.M_score_act, 1) as int64) as M_score,
 
   -- Construction du code RFM “X-Y-Z”
   concat(

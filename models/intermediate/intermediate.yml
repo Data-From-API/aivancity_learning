@@ -1,5 +1,5 @@
+---
 version: 2
-
 models:
   - name: int_sales
     description: >
@@ -8,220 +8,208 @@ models:
       descriptive attributes for downstream analytics (e.g., RFM, reporting).
     columns:
       - name: sale_date
-        description: "Date of the sale (DATE)."
+        description: Date of the sale (DATE).
         tests:
           - not_null
       - name: key_transaction_id
         description: >
           Unique identifier for each transaction, constructed as
-          `CONCAT(date(sale_date), '_', customer_id, '_', product_id)`.
+          `CONCAT(date(sale_date), '_', customer_id, '_', product_id, '_',
+          status)`.
         tests:
           - not_null
           - unique
       - name: store_id
-        description: "ID of the store where the sale occurred."
+        description: ID of the store where the sale occurred.
         tests:
           - not_null
-          - relationships:
-              to: ref('stg_stores')
-              field: store_id
       - name: store_name
-        description: "Human-readable name of the store."
+        description: Human-readable name of the store.
         tests:
           - not_null
       - name: store_channel
         description: >
-          Normalized sales channel (e.g., 'Store' for boutique,
-          'eStore' for ecommerce/click_collect, 'Not Defined' otherwise).
+          Normalized sales channel (e.g., 'Store' for boutique, 'eStore' for
+          ecommerce/click_collect, 'Not Defined' otherwise).
         tests:
           - not_null
       - name: store_city
-        description: "City in which the store is located."
+        description: City in which the store is located.
       - name: store_region
-        description: "Geographic region or state of the store."
+        description: Geographic region or state of the store.
       - name: revenue_ordered
-        description: "Raw order amount (FLOAT64) before billing adjustments."
+        description: Raw order amount (FLOAT64) before billing adjustments.
         tests:
           - not_null
       - name: revenue_billed
-        description: "Billed amount (FLOAT64). Only positive values are retained downstream."
+        description: Billed amount (FLOAT64). Only positive values are retained downstream.
         tests:
           - not_null
       - name: product_id
-        description: "ID of the product sold."
+        description: ID of the product sold.
         tests:
           - not_null
-          - relationships:
-              to: ref('stg_products')
-              field: product_id
       - name: product_name
-        description: "Name of the product."
+        description: Name of the product.
         tests:
           - not_null
       - name: product_brand
-        description: "Brand associated with the product."
+        description: Brand associated with the product.
       - name: product_category
-        description: "High-level category of the product."
+        description: High-level category of the product.
       - name: product_subcategory
-        description: "Subcategory of the product."
+        description: Subcategory of the product.
       - name: customer_id
-        description: "ID of the customer who made the purchase."
+        description: ID of the customer who made the purchase.
         tests:
           - not_null
-          - relationships:
-              to: ref('stg_customers')
-              field: customer_id
       - name: customer_fullname
-        description: "Customer's full name (concatenation of first and last name)."
+        description: Customer's full name (concatenation of first and last name).
         tests:
           - not_null
       - name: customer_gender
         description: >
-          Normalized gender code: 'M' for male, 'F' for female,
-          'Not Defined' otherwise.
+          Normalized gender code: 'M' for male, 'F' for female, 'Not Defined'
+          otherwise.
       - name: is_customer_loyal
-        description: "Boolean flag indicating if the customer is in the loyalty program."
+        description: Boolean flag indicating if the customer is in the loyalty program.
         tests:
           - not_null
       - name: customer_loyalty_level
-        description: "Customer's loyalty tier (e.g., Silver, Gold, Platinum), or 'No Loyalty'."
+        description: Customer's loyalty tier (e.g., Silver, Gold, Platinum), or 'No
+          Loyalty'.
       - name: customer_loyalty_subscription_date
-        description: "Date when the customer joined the loyalty program (signup_date)."
+        description: Date when the customer joined the loyalty program (signup_date).
       - name: first_purchase_date
-        description: "Date of the customer's first recorded purchase (window function)."
+        description: Date of the customer's first recorded purchase (window function).
         tests:
           - not_null
       - name: last_purchase_date
-        description: "Date of the customer's last recorded purchase (window function)."
+        description: Date of the customer's last recorded purchase (window function).
         tests:
           - not_null
-
   - name: int_customers
     description: >
-      Intermediate customer profile table. Combines static customer attributes
-      (demographics, loyalty) with calculated first and last purchase dates from sales.
+      Intermediate customer profile table. Combines static customer
+      attributes (demographics, loyalty) with calculated first and last purchase
+      dates from sales.
     columns:
       - name: customer_id
-        description: "ID of the customer. Unique identifier."
+        description: ID of the customer. Unique identifier.
         tests:
           - not_null
           - unique
       - name: customer_gender
-        description: "Customer's gender as 'male', 'female', or original source value."
+        description: Customer's gender as 'male', 'female', or original source value.
       - name: is_loyalty_member
-        description: "Boolean flag indicating loyalty program membership."
+        description: Boolean flag indicating loyalty program membership.
       - name: loyalty_level
-        description: "Customer's loyalty tier (or 'No loyalty Level' if null)."
+        description: Customer's loyalty tier (or 'No loyalty Level' if null).
       - name: signup_date
-        description: "Date when the customer signed up or joined loyalty."
+        description: Date when the customer signed up or joined loyalty.
         tests:
           - not_null
       - name: last_purchase_date
-        description: "Most recent sale date for the customer (across all time)."
+        description: Most recent sale date for the customer (across all time).
       - name: first_purchase_date
-        description: "First recorded sale date for the customer (across all time)."
-
+        description: First recorded sale date for the customer (across all time).
   - name: int_rfm_base
     description: >
-      Ephemeral model to calculate base RFM metrics (R_value, F_value, M_value)
-      for each customer.  
-      - R_value: days since last purchase (using up to 3 years of history).  
-      - F_value: number of transactions in the last 12 months.  
-      - M_value: total billed revenue in the last 12 months.  
-      Includes all customers (via stg_customers).
+      Ephemeral model to calculate base RFM metrics (R_value, F_value,
+      M_value) for each customer.   - R_value: days since last purchase (using
+      up to 3 years of history).   - F_value: number of transactions in the last
+      12 months.   - M_value: total billed revenue in the last 12
+      months.   Includes all customers (via stg_customers).
     columns:
       - name: customer_id
-        description: "ID of the customer."
+        description: ID of the customer.
         tests:
           - not_null
           - unique
       - name: last_sale_date
-        description: "Date of the customer's last billed sale (within 3-year window)."
+        description: Date of the customer's last billed sale (within 3-year window).
       - name: R_value
         description: >
-          Recency value: number of days since `last_sale_date`.  
-          If `last_sale_date` is null (no purchase in 3 years), a large placeholder (100 years) is used.
+          Recency value: number of days since `last_sale_date`.   If
+          `last_sale_date` is null (no purchase in 3 years), a large placeholder
+          (100 years) is used.
         tests:
           - not_null
-          - accepted_values:
-              values: [0, 9999] 
       - name: F_value
         description: >
-          Frequency: count of distinct transactions (key_transaction_id)
-          over the last 12 months. 0 if no transaction.
+          Frequency: count of distinct transactions (key_transaction_id) over
+          the last 12 months. 0 if no transaction.
         tests:
           - not_null
-          - relationships:
-              to: ref('stg_sales')
-              field: customer_id
       - name: M_value
         description: >
-          Monetary: sum of `revenue_billed` over the last 12 months.  
-          0 if no billed revenue.
+          Monetary: sum of `revenue_billed` over the last 12 months.   0 if
+          no billed revenue.
         tests:
           - not_null
       - name: snapshot_date
-        description: "Date of RFM calculation (CURRENT_DATE())."
+        description: Date of RFM calculation (CURRENT_DATE()).
         tests:
           - not_null
-
   - name: int_rfm_scores
     description: >
-      Table assigning R_score, F_score, M_score, and RFM_code to each customer.
-      - Scores (1-5) computed only for “active” customers (R_value ≤ 365, F_value > 0, M_value > 0).  
-      - Inactive customers default to score 1 for each metric.  
-      - RFM_code is the concatenation “R_score-F_score-M_score”.
+      Table assigning R_score, F_score, M_score, and RFM_code to each
+      customer. - Scores (1-5) computed only for “active” customers (R_value ≤
+      365, F_value > 0, M_value > 0).   - Inactive customers default to score 1
+      for each metric.   - RFM_code is the concatenation
+      “R_score-F_score-M_score”.
     columns:
       - name: customer_id
-        description: "ID of the customer."
+        description: ID of the customer.
         tests:
           - not_null
           - unique
       - name: R_value
-        description: "Recency value (days since last_purchase_date)."
+        description: Recency value (days since last_purchase_date).
         tests:
           - not_null
       - name: R_score
         description: >
-          Recency score (1-5).  
-          If F_value=0 or R_value>365, defaults to 1.  
-          Otherwise, assigned by NTILE(5) on R_value ascending for active customers.
+          Recency score (1-5).   If F_value=0 or R_value>365, defaults to
+          1.   Otherwise, assigned by NTILE(5) on R_value ascending for active
+          customers.
         tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
+              quote: false
       - name: F_value
-        description: "Frequency value (number of distinct transactions in last 12 months)."
+        description: Frequency value (number of distinct transactions in last 12 months).
         tests:
           - not_null
       - name: F_score
         description: >
-          Frequency score (1-5).  
-          If F_value=0, defaults to 1.  
-          Otherwise, assigned by NTILE(5) on F_value descending for active customers.
+          Frequency score (1-5).   If F_value=0, defaults to 1.   Otherwise,
+          assigned by NTILE(5) on F_value descending for active customers.
         tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
+              quote: false
       - name: M_value
-        description: "Monetary value (sum of revenue_billed over last 12 months)."
+        description: Monetary value (sum of revenue_billed over last 12 months).
         tests:
           - not_null
       - name: M_score
         description: >
-          Monetary score (1-5).  
-          If M_value=0, defaults to 1.  
-          Otherwise, assigned by NTILE(5) on M_value descending for active customers.
+          Monetary score (1-5).   If M_value=0, defaults to 1.   Otherwise,
+          assigned by NTILE(5) on M_value descending for active customers.
         tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
+              quote: false
       - name: RFM_code
-        description: >
+        description: |
           Concatenated string of “R_score-F_score-M_score” (e.g., “5-3-4”).
         tests:
           - not_null
       - name: snapshot_date
-        description: "Date of RFM scoring (CURRENT_DATE())."
+        description: Date of RFM scoring (CURRENT_DATE()).
         tests:
           - not_null

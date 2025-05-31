@@ -22,7 +22,7 @@ select
     product.category as product_category,
     product.subcategory as product_subcategory,
 -- Customer Info
-    sales.customer_id,
+    cast(sales.customer_id as string) as customer_id,
     customer.fullname as customer_fullname,
     case 
         when customer.gender = 'male' then 'M'

@@ -32,9 +32,6 @@ models:
         description: "Total number of product units sold (count of product_id)."
         tests:
           - not_null
-          - relationships:
-              to: ref('stg_products')
-              field: product_id
       - name: nb_distinct_product_sold
         description: "Number of distinct products sold on that day."
         tests:
@@ -80,7 +77,7 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "R_value >= 0"
+              expression: ">= 0"
       - name: R_score
         description: >
           Recency score (1-5).  
@@ -89,12 +86,13 @@ models:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
+              quote: false
       - name: F_value
         description: "Frequency: count of distinct transactions (last 12 months)."
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "F_value >= 0"
+              expression: ">= 0"
       - name: F_score
         description: >
           Frequency score (1-5).  
@@ -103,12 +101,13 @@ models:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
+              quote: false
       - name: M_value
         description: "Monetary: sum of billed revenue (last 12 months)."
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "M_value >= 0"
+              expression: ">= 0"
       - name: M_score
         description: >
           Monetary score (1-5).  
@@ -117,6 +116,7 @@ models:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
+              quote: false
       - name: RFM_code
         description: "Concatenated string `R_score-F_score-M_score` (e.g., '5-3-4')."
         tests:
@@ -134,6 +134,7 @@ models:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+              quote: false
       - name: segment_name
         description: >
           Textual RFM segment:

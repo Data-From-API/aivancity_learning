@@ -59,7 +59,6 @@ all_customers as (
   from {{ ref('stg_customers') }}
 )
 
--- 4) Assemblage final : R_value, F_value, M_value pour chaque client
 select
   a.customer_id,
 
@@ -67,17 +66,18 @@ select
   lp.last_sale_date,
 
   -- R_value en jours ; si null, on met artificiellement un R_value très élevé (ici 9999)
-  date_diff(
+  cast(
+    date_diff(
     {{ snapshot_date }},
     coalesce(lp.last_sale_date, date_sub({{ snapshot_date }}, interval 100 year)),
     day
-  ) as R_value,
+  ) as int64) as R_value,
 
   -- F_value = 0 si pas d’achat dans les 12 mois
-  coalesce(r12.F_value, 0) as F_value,
+  cast(coalesce(r12.F_value, 0) as int64) as F_value,
 
   -- M_value = 0 si pas d’achat dans les 12 mois
-  coalesce(r12.M_value, 0) as M_value,
+  cast(coalesce(r12.M_value, 0) as int64) as M_value,
 
   {{ snapshot_date }} as snapshot_date
 

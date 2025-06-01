@@ -2,6 +2,7 @@
   config(
     materialized    = "incremental",
     unique_key      = "key_transaction_id",
+    on_schema_change = "sync_all_columns",
     partition_by    = {
       "field": "sale_date",
       "data_type": "date",

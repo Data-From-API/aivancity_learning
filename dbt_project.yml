@@ -44,6 +44,9 @@ models:
       +materialized: view
     production:
       +materialized: table
+    +persist_docs:
+      relation: true
+      columns: true
 
 
 vars:

@@ -9,12 +9,11 @@ exposures:
       name: Eric Badarou
       email: eric@datafromapi.com
   - name: rfm_histo_run
-    type: analysis
-    maturity: medium
+    type: dashboard
+    maturity: high
     description: "Models for build RFM history table"
     depends_on:
       - ref('final_rfm_segmentation')
-    owner :
+    owner:
       name: Eric Badarou
       email: eric@datafromapi.com
-      

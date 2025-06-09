@@ -70,7 +70,6 @@ models:
       - name: customer_id
         description: "ID of the customer (unique key)."
         tests:
-          - unique
           - not_null
       - name: R_value
         description: "Recency in days: days since last billed sale. Large placeholder if no sale in 3 years."

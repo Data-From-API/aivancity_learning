@@ -23,6 +23,7 @@ select
     store_city,
     store_region,
     store_channel,
+    count(distinct store_id) as nb_stores,
     count(product_id) as total_product_sold,
     count(distinct product_id) as nb_distinct_product_sold,
     sum(revenue_ordered) as revenue_ordered,

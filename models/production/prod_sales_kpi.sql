@@ -11,6 +11,11 @@
 
 select
     sale_date,
+    case 
+        when date(sale_date) = date(first_purchase_date) 
+        then 'New Customer' 
+        else 'Returning Customer' 
+    end as customer_type,
     product_category,
     product_subcategory,
     customer_loyalty_level,

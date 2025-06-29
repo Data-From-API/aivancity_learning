@@ -88,3 +88,14 @@ sources:
             description: "Ville où se trouve le magasin."
           - name: region
             description: "Région ou département où se trouve le magasin."
+      - name: fact_sessions
+        description: >
+          Table des sessions. Contient les informations de traffic sur le site web de l'entreprise.
+        columns:
+          - name: session_date
+            description: Date de la sessions
+          - name: device_type
+            description: Type de support utilisé (Mobile, Desktop, Tablet, etc..)
+          - name: nb_sessions
+            description: Nombre de sessions agrégées par jour et par device_type
+

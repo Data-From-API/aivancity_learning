@@ -1,5 +1,6 @@
 {{ 
     config(
+        materialized = 'incremental',
         partition_by = {
             "field": "sale_date",
             "data_type": "date",
@@ -31,4 +32,7 @@ select
     count(distinct key_transaction_id) as nb_transactions,
     count(distinct customer_id) as nb_customer,
 from {{ ref('int_sales') }}
+    {% if is_incremental() %}
+        where date(sale_date) > (select max(sale_date) from {{ this }})
+    {% endif %}
 group by all

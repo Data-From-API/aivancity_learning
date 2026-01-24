@@ -3,3 +3,8 @@
 target/
 dbt_packages/
 logs/
+.venv/
+credentials/
+.vscode/
+docs/training/
+template/

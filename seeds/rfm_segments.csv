@@ -1,0 +1,10 @@
+segment_id,segment_name,segment_description
+1,VIP,Top customers with highest recency frequency and monetary scores (5-5-5)
+2,Good Customer,High-value customers with near-perfect RFM scores across dimensions
+3,Regular,Consistent active customers with above-average RFM scores (4+ across all)
+4,Expectancy,Recently active customers with low frequency or monetary engagement
+5,Opportunist,Moderate recency customers with some frequency or monetary activity
+6,Cold Sensitive,Active but low engagement customers at risk of churning
+7,Minimalist,Recently active but minimal transaction and spend behavior
+8,New,Brand new customers with first interaction and no repeat behavior yet
+9,Inactive,Customers with no purchase activity in the last 365 days

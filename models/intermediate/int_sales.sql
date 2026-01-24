@@ -5,12 +5,7 @@ select
     key_transaction_id,
     sales.store_id,
     store.store_name,
-    case 
-        when store_channel = 'boutique' then 'Store'
-        when store_channel = 'ecommerce' then 'eStore'
-        when store_channel = 'click_collect' then 'eStore'
-        else 'Not Defined' 
-    end as store_channel,
+    {{ normalize_channel('store_channel') }} as store_channel,
     store.city as store_city,
     store.region as store_region,
     revenue_ordered,
@@ -24,11 +19,7 @@ select
 -- Customer Info
     cast(sales.customer_id as string) as customer_id,
     customer.fullname as customer_fullname,
-    case 
-        when customer.gender = 'male' then 'M'
-        when customer.gender = 'female' then 'F'
-        else 'Not Defined'
-    end as customer_gender,
+    {{ normalize_gender('customer.gender') }} as customer_gender,
     customer.is_loyalty_member as is_customer_loyal,
     coalesce(customer.loyalty_level, 'No Loyalty') as customer_loyalty_level,
     customer.signup_date as customer_loyalty_subscription_date,

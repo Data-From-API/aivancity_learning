@@ -131,28 +131,4 @@ models:
         tests:
           - not_null
 
-  - name: stg_sales_billed
-    description: >
-      Staging view for billed sales.  
-      Filters `stg_sales` to include only transactions with `revenue_billed > 0` 
-      over the last 12 months. Used downstream for RFM calculations.
-    columns:
-      - name: sale_date
-        description: "Date of the sale (DATE)."
-        tests:
-          - not_null
-      - name: customer_id
-        description: "ID of the customer who made the purchase."
-        tests:
-          - not_null
-      - name: key_transaction_id
-        description: >
-          Unique key for each billed transaction. Carries same definition as in `stg_sales`."
-        tests:
-          - unique
-          - not_null
-      - name: revenue_billed
-        description: "Positive billed amount for the transaction."
-        tests:
-          - not_null
 

@@ -1,7 +1,7 @@
-{{ 
+{{
   config(
     materialized = "view"
-  ) 
+  )
 }}
 
 -- Ne garder QUE les ventes facturées positif sur 12 mois

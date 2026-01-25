@@ -5,7 +5,8 @@
     target_schema = 'snapshots',
     unique_key    = 'customer_id',
     strategy      = 'check',
-    check_cols    = ['loyalty_level', 'is_loyalty_member']
+    check_cols    = ['loyalty_level', 'is_loyalty_member'],
+    tags = ['daily']
   )
 }}
 

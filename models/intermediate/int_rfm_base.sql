@@ -1,7 +1,8 @@
-{{ 
+{{
   config(
-    materialized = "ephemeral"
-  ) 
+    materialized = "ephemeral",
+    tags         = ["rfm", "weekly"]
+  )
 }}
 
 -- On utilise CURRENT_DATE() pour le snapshot_date

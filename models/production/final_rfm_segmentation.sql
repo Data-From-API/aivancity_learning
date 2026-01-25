@@ -1,12 +1,13 @@
-{{ 
+{{
   config(
     materialized   = "incremental",
     unique_key     = ["customer_id", "snapshot_date"],
     partition_by   = {
       "field": "snapshot_date",
       "data_type": "date"
-    }
-  ) 
+    },
+    tags           = ["rfm", "weekly"]
+  )
 }}
 
 with scores as (

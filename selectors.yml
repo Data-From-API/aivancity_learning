@@ -1,0 +1,42 @@
+selectors:
+  - name: daily_run
+    description: "Pipeline quotidien - KPIs ventes et snapshot clients"
+    definition:
+      intersection:
+        - union:
+            - method: exposure
+              value: daily_run
+              parents: true
+            - method: tag
+              value: daily
+        - exclude:
+            - method: tag
+              value: weekly
+
+  - name: weekly_rfm
+    description: "Pipeline hebdomadaire (lundi) - Segmentation RFM"
+    definition:
+      union:
+        - method: exposure
+          value: rfm_histo_run
+          parents: true
+        - method: tag
+          value: rfm
+
+  - name: snapshots_only
+    description: "Tous les snapshots uniquement"
+    definition:
+      method: resource_type
+      value: snapshot
+
+  - name: staging_only
+    description: "Tous les modèles staging"
+    definition:
+      method: path
+      value: models/staging
+
+  - name: full_build
+    description: "Build complet de tous les modèles"
+    definition:
+      method: path
+      value: models

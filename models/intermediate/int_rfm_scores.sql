@@ -1,7 +1,8 @@
-{{ 
+{{
   config(
-    materialized = "table"
-  ) 
+    materialized = "table",
+    tags         = ["rfm", "weekly"]
+  )
 }}
 
 with base as (

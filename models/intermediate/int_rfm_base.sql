@@ -8,7 +8,7 @@
 -- On utilise CURRENT_DATE() pour le snapshot_date
 {% set snapshot_date = "CURRENT_DATE()" %}
 
--- 1) Extraction de la date de dernière vente (R) sur les 3 dernières années
+-- 1) Extraction de la date de derniere vente (R) sur les 3 dernieres annees
 with historical_sales as (
   select
     customer_id,
@@ -30,7 +30,7 @@ last_purchase as (
   group by customer_id
 ),
 
--- 2) Calcul de F_value et M_value sur les 12 mois précédents snapshot_date
+-- 2) Calcul de F_value et M_value sur les 12 mois precedents snapshot_date
 recent_sales_12m as (
   select
     customer_id,
@@ -61,29 +61,29 @@ all_customers as (
 )
 
 select
-  a.customer_id,
+  all_customers.customer_id,
 
-  -- Si le client n’a jamais acheté sur les 3 dernières années, last_sale_date = NULL
-  lp.last_sale_date,
+  -- Si le client n'a jamais achete sur les 3 dernieres annees, last_sale_date = NULL
+  last_purchase.last_sale_date,
 
-  -- R_value en jours ; si null, on met artificiellement un R_value très élevé (ici 9999)
+  -- R_value en jours ; si null, on met artificiellement un R_value tres eleve (ici 9999)
   cast(
     date_diff(
     {{ snapshot_date }},
-    coalesce(lp.last_sale_date, date_sub({{ snapshot_date }}, interval 100 year)),
+    coalesce(last_purchase.last_sale_date, date_sub({{ snapshot_date }}, interval 100 year)),
     day
   ) as int64) as R_value,
 
-  -- F_value = 0 si pas d’achat dans les 12 mois
-  cast(coalesce(r12.F_value, 0) as int64) as F_value,
+  -- F_value = 0 si pas d'achat dans les 12 mois
+  cast(coalesce(rfm_12m.F_value, 0) as int64) as F_value,
 
-  -- M_value = 0 si pas d’achat dans les 12 mois
-  cast(coalesce(r12.M_value, 0) as int64) as M_value,
+  -- M_value = 0 si pas d'achat dans les 12 mois
+  cast(coalesce(rfm_12m.M_value, 0) as int64) as M_value,
 
   {{ snapshot_date }} as snapshot_date
 
-from all_customers a
-left join last_purchase lp
-  on a.customer_id = lp.customer_id
-left join rfm_12m r12
-  on a.customer_id = r12.customer_id
+from all_customers
+left join last_purchase
+  on all_customers.customer_id = last_purchase.customer_id
+left join rfm_12m
+  on all_customers.customer_id = rfm_12m.customer_id

@@ -142,5 +142,104 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['VIP', 'Good Customer', 'Regular', 'Expectancy', 'Opportunist', 
+              values: ['VIP', 'Good Customer', 'Regular', 'Expectancy', 'Opportunist',
                        'Cold Sensitive', 'Minimalist', 'New', 'Inactive']
+
+  - name: prod_customer_360
+    description: >
+      Customer 360 table combining customer profile, RFM segmentation, aggregated sales metrics,
+      and behavioral preferences (preferred category, channel, region).
+      One row per customer (latest RFM snapshot only, no history).
+      Clustered by segment_name and customer_loyalty_level.
+      Rebuilt weekly alongside final_rfm_segmentation.
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier."
+        tests:
+          - not_null
+      - name: customer_gender
+        description: "Gender of the customer ('M', 'F', or 'Not Defined')."
+      - name: customer_loyalty_level
+        description: "Loyalty tier (Silver, Gold, Platinum, or 'No Loyalty')."
+      - name: is_loyalty_member
+        description: "Whether the customer is a loyalty program member."
+      - name: signup_date
+        description: "Date the customer joined the loyalty program."
+      - name: first_purchase_date
+        description: "Date of the customer's first purchase."
+      - name: last_purchase_date
+        description: "Date of the customer's most recent purchase."
+      - name: R_value
+        description: "Recency: days since last purchase."
+        tests:
+          - not_null
+      - name: R_score
+        description: "Recency score (1-5)."
+        tests:
+          - not_null
+      - name: F_value
+        description: "Frequency: number of transactions (last 12 months)."
+        tests:
+          - not_null
+      - name: F_score
+        description: "Frequency score (1-5)."
+        tests:
+          - not_null
+      - name: M_value
+        description: "Monetary: total billed revenue (last 12 months)."
+        tests:
+          - not_null
+      - name: M_score
+        description: "Monetary score (1-5)."
+        tests:
+          - not_null
+      - name: RFM_code
+        description: "Concatenated RFM code (e.g., '5-3-4')."
+        tests:
+          - not_null
+      - name: segment_id
+        description: "RFM segment ID (1-9)."
+        tests:
+          - not_null
+      - name: segment_name
+        description: "RFM segment name (VIP, Good Customer, Regular, etc.)."
+        tests:
+          - not_null
+      - name: total_revenue_billed
+        description: "Billed revenue for the customer (last 12 months)."
+        tests:
+          - not_null
+      - name: total_revenue_ordered
+        description: "Ordered revenue for the customer (last 12 months)."
+        tests:
+          - not_null
+      - name: total_transactions
+        description: "Number of distinct transactions (last 12 months)."
+        tests:
+          - not_null
+      - name: nb_distinct_products
+        description: "Number of distinct products purchased (last 12 months)."
+        tests:
+          - not_null
+      - name: nb_categories
+        description: "Number of distinct product categories purchased (last 12 months)."
+        tests:
+          - not_null
+      - name: avg_basket
+        description: "Average basket value (total_revenue_billed / total_transactions)."
+        tests:
+          - not_null
+      - name: total_unbilled_amount
+        description: "Difference between ordered and billed revenue (returns, cancellations)."
+        tests:
+          - not_null
+      - name: preferred_category
+        description: "Product category with the highest billed revenue for this customer."
+      - name: preferred_channel
+        description: "Sales channel with the most transactions for this customer (Store, eStore)."
+      - name: preferred_region
+        description: "Region where the customer shops most frequently."
+      - name: snapshot_date
+        description: "Date when the customer 360 was calculated."
+        tests:
+          - not_null

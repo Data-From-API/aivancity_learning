@@ -6,6 +6,7 @@ select
     sales.store_id,
     store.store_name,
     {{ normalize_channel('store_channel') }} as store_channel,
+    {{ is_valid_store('store.city', 'store_channel') }} as is_valid_store_flag,
     store.city as store_city,
     store.region as store_region,
     revenue_ordered,
